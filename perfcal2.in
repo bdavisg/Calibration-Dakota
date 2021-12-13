@@ -1,0 +1,43 @@
+#  DAKOTA INPUT FILE - perfcal2.in
+#  This Dakota input file creates a gaussian process surrogate model of EPIC perforation simulations generated using LHS samples. A Bayesian calibration is then conducted by sampling from the surrogate model as the mean of a normally distributed liklihood function.  
+
+environment,
+	tabular_data
+		tabular_data_file = 'perf.dat'
+	output_file = 'perf.out'
+	error_file = 'perf.err'
+	method_pointer = 'method_on_surr'
+	
+method,
+	id_method = 'method_on_surr'
+	bayes_calibration queso 
+	dram
+	chain_samples = 1000
+	seed = 249
+	export_chain_points_file = 'samples.dat'
+	emulator
+	gaussian_process surfpack
+	import_build_points_file = 'training.dat' annotated
+		
+variables,
+	id_variables = 'v1'
+	
+	continuous_state = 2
+		lower_bounds	300			0
+		upper_bounds	750			6
+		descriptors		'vel____'	'theta__'
+	
+	normal_uncertain = 13
+		means 			2.987E-01	1.071E+00	6.963E-01	1.077E-02	1.304E+01	2.152E-02	2.124E+07	5.590E-03	1.152E+09	-5.048E+09	8.519E+09	1.581E+08	3.602E-01
+		std_deviations	2.987E-02	1.071E-01	6.963E-02	1.077E-03	6.52		2.152E-03	2.124E+06	5.590E-04	1.152E+08	 5.048E+08	8.519E+08	1.581E+07	3.602E-02
+		descriptors		'A______'	'B______'	'n______'	'c______'	's______'	'd______'	'pc_____'	'uc_____'	'k1_____'	'k2_____'	'k3_____'	'pl_____'	'ul_____'
+		
+responses,
+	id_responses = 'r1'
+	calibration_terms = 1
+	calibration_data_file = 'expdata.dat' annotated
+	num_experiments = 5
+	num_config_variables = 2
+	descriptors 'obj_fn'
+	no_gradients
+	no_hessians
